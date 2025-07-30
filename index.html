@@ -65,9 +65,23 @@
             ? String.fromCodePoint(0x24B6 + code - 65)
             : String.fromCodePoint(styles[style][0] + code - 65);
         } else if (/^[a-z]$/.test(ch)) {
-          output += style === "circled"
-            ? String.fromCodePoint(0x24D0 + code - 97)
-            : String.fromCodePoint(styles[style][1] + code - 97);
+          if (style === "circled") {
+  output += String.fromCodePoint(0x24B6 + code - 65);
+} else if (style === "doubleStruck") {
+  // Fix for Double Struck Capital Letters with missing codes
+  const doubleStruckMap = {
+    A: 0x1D538, B: 0x1D539, C: 0x2102, D: 0x1D53B, E: 0x1D53C,
+    F: 0x1D53D, G: 0x1D53E, H: 0x210D, I: 0x1D540, J: 0x1D541,
+    K: 0x1D542, L: 0x1D543, M: 0x1D544, N: 0x1D545, O: 0x1D546,
+    P: 0x2119, Q: 0x211A, R: 0x211D, S: 0x1D54A, T: 0x1D54B,
+    U: 0x1D54C, V: 0x1D54D, W: 0x1D54E, X: 0x1D54F, Y: 0x1D550,
+    Z: 0x2124
+  };
+  output += String.fromCodePoint(doubleStruckMap[ch]);
+} else {
+  output += String.fromCodePoint(styles[style][0] + code - 65);
+}
+
         } else if (/^[0-9]$/.test(ch) && style === "circled") {
           output += String.fromCodePoint(0x2460 + code - 49); // circled 1–9
         } else {
