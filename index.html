@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Unicode Fancy Font Generator</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9f9f9;
+      padding: 2em;
+    }
+    h2 {
+      margin-bottom: 0;
+    }
+    select, input, .output {
+      width: 100%;
+      font-size: 1.2em;
+      margin-top: 1em;
+      padding: 0.8em;
+    }
+    .output {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h2>Fancy Unicode Font Generator</h2>
+  <select id="styleSelect" onchange="convertFancy()">
+    <option value="bold">𝐁𝐨𝐥𝐝</option>
+    <option value="italic">𝑰𝒕𝒂𝒍𝒊𝒄</option>
+    <option value="boldItalic">𝑩𝒐𝒍𝒅 𝑰𝒕𝒂𝒍𝒊𝒄</option>
+    <option value="script">𝒮𝒸𝓇𝒾𝓅𝓉</option>
+    <option value="boldScript">𝓑𝓸𝓵𝓭 𝓢𝓬𝓻𝓲𝓹𝓽</option>
+    <option value="fraktur">𝔉𝔯𝔞𝔨𝔱𝔲𝔯</option>
+    <option value="doubleStruck">𝔻𝕠𝕦𝕓𝕝𝕖 𝕊𝕥𝕣𝕦𝕔𝕜</option>
+    <option value="monospace">𝙼𝚘𝚗𝚘𝚜𝚙𝚊𝚌𝚎</option>
+    <option value="circled">ⒸⒾⓇⒸⓁⒺⒹ</option>
+  </select>
+
+  <input type="text" id="inputText" placeholder="Type your text here..." oninput="convertFancy()">
+  <div class="output" id="outputText"></div>
+
+  <script>
+    const styles = {
+      bold:        [0x1D400, 0x1D41A],
+      italic:      [0x1D434, 0x1D44E],
+      boldItalic:  [0x1D468, 0x1D482],
+      script:      [0x1D49C, 0x1D4B6],
+      boldScript:  [0x1D4D0, 0x1D4EA],
+      fraktur:     [0x1D504, 0x1D51E],
+      doubleStruck:[0x1D538, 0x1D552],
+      monospace:   [0x1D670, 0x1D68A],
+      circled:     ['circled']
+    };
+
+    function convertFancy() {
+      const input = document.getElementById("inputText").value;
+      const style = document.getElementById("styleSelect").value;
+      let output = "";
+
+      for (const ch of input) {
+        const code = ch.codePointAt(0);
+        if (/^[A-Z]$/.test(ch)) {
+          output += style === "circled"
+            ? String.fromCodePoint(0x24B6 + code - 65)
+            : String.fromCodePoint(styles[style][0] + code - 65);
+        } else if (/^[a-z]$/.test(ch)) {
+          output += style === "circled"
+            ? String.fromCodePoint(0x24D0 + code - 97)
+            : String.fromCodePoint(styles[style][1] + code - 97);
+        } else if (/^[0-9]$/.test(ch) && style === "circled") {
+          output += String.fromCodePoint(0x2460 + code - 49); // circled 1–9
+        } else {
+          output += ch; // keep spaces and punctuation
+        }
+      }
+
+      document.getElementById("outputText").textContent = output;
+    }
+  </script>
+</body>
+</html>
