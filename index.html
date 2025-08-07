@@ -90,7 +90,7 @@
           }
         } else if (/^[a-z]$/.test(ch)) {
           if (style === "blackCircled") {
-            output += String.fromCodePoint(styles[style][0] + code - 65);
+            output += String.fromCodePoint(styles[style][0] + code - 97);
           } else if (style === "circled") {
             output += String.fromCodePoint(0x24D0 + code - 97);
           } else {
