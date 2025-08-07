@@ -42,6 +42,8 @@
     <option value="monospace">𝙼𝚘𝚗𝚘𝚜𝚙𝚊𝚌𝚎</option>
     <option value="circled">ⒸⒾⓇⒸⓁⒺⒹ</option>
     <option value="blackCircled">🅑🅛🅐🅒🅚 🅒🅘🅡🅒🅛🅔🅓</option>
+    <option value="squared">🅂🅀🅄🄰🅁🄴🄳</option>
+    <option value="blackSquared">🅱🅻🅰🅲🅺 🆂🆀🆄🅰🆁🅴🅳</option>
   </select>
 
   <input type="text" id="inputText" placeholder="Type your text here..." oninput="convertFancy()">
@@ -58,7 +60,9 @@
       doubleStruck:[0x1D538, 0x1D552], // lowercase only consistent
       monospace:   [0x1D670, 0x1D68A],
       circled:     ['circled'],
-      blackCircled: [0x1F150, 0x1F169]
+      blackCircled: [0x1F150, 0x1F169],
+      squared: [0x1F130, 0x1F149],
+      blackSquared: [0x1F170, 0x1F189]
     };
 
     const doubleStruckMap = {
@@ -89,7 +93,11 @@
             output += String.fromCodePoint(styles[style][0] + code - 65);
           }
         } else if (/^[a-z]$/.test(ch)) {
-          if (style === "blackCircled") {
+          if (style === "blackSquared") {
+            output += String.fromCodePoint(styles[style][1] + code - 122);
+          } else if (style === "squared") {
+            output += String.fromCodePoint(styles[style][1] + code - 122);
+          } else if (style === "blackCircled") {
             output += String.fromCodePoint(styles[style][0] + code - 97);
           } else if (style === "circled") {
             output += String.fromCodePoint(0x24D0 + code - 97);
