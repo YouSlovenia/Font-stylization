@@ -14,7 +14,7 @@
     h2 {
       margin-bottom: 0;
     }
-    select, input, .output {
+    select, input, .output, button {
       width: 100%;
       font-size: 1.2em;
       margin-top: 1em;
@@ -26,11 +26,24 @@
       background: white;
       border: 1px solid #ccc;
       padding: 1em;
+      min-height: 2em;
+      word-break: break-word;
+    }
+    button {
+      cursor: pointer;
+      background: #007BFF;
+      color: white;
+      border: none;
+      margin-top: 0.5em;
+    }
+    button:hover {
+      background: #0056b3;
     }
   </style>
 </head>
 <body>
   <h2>Fancy Unicode Font Generator</h2>
+
   <select id="styleSelect" onchange="convertFancy()">
     <option value="bold">𝐁𝐨𝐥𝐝</option>
     <option value="italic">𝑰𝒕𝒂𝒍𝒊𝒄</option>
@@ -49,6 +62,7 @@
 
   <input type="text" id="inputText" placeholder="Type your text here..." oninput="convertFancy()">
   <div class="output" id="outputText"></div>
+  <button onclick="copyOutput()">Copy to Clipboard</button>
 
   <script>
     const styles = {
@@ -57,14 +71,14 @@
       boldItalic:  [0x1D468, 0x1D482],
       script:      ['script'],
       boldScript:  [0x1D4D0, 0x1D4EA],
-      fraktur:     [0x1D51E, 0x1D537], // lowercase only consistent
-      boldFraktur:     [0x1D56C, 0x1D59F],
-      doubleStruck:[0x1D538, 0x1D552], // lowercase only consistent
+      fraktur:     [0x1D504, 0x1D51E],
+      boldFraktur: [0x1D56C, 0x1D586],
+      doubleStruck:[0x1D538, 0x1D552],
       monospace:   [0x1D670, 0x1D68A],
       circled:     ['circled'],
-      blackCircled: [0x1F150, 0x1F169],
-      squared: [0x1F130, 0x1F149],
-      blackSquared: [0x1F170, 0x1F189]
+      blackCircled:[0x1F150, 0x1F169],
+      squared:     [0x1F130, 0x1F149],
+      blackSquared:[0x1F170, 0x1F189]
     };
 
     const doubleStruckMap = {
@@ -75,27 +89,30 @@
       U: 0x1D54C, V: 0x1D54D, W: 0x1D54E, X: 0x1D54F, Y: 0x1D550,
       Z: 0x2124
     };
-const scriptMap = {
+
+    const scriptMap = {
       A: 0x1D49C, B: 0x212C, C: 0x1D49E, D: 0x1D49F, E: 0x2130,
       F: 0x2131, G: 0x1D4A2, H: 0x210B, I: 0x2110, J: 0x1D4A5,
       K: 0x1D4A6, L: 0x2112, M: 0x2133, N: 0x1D4A9, O: 0x1D4AA,
       P: 0x1D4AB, Q: 0x1D4AC, R: 0x211B, S: 0x1D4AE, T: 0x1D4AF,
       U: 0x1D4B0, V: 0x1D4B1, W: 0x1D4B2, X: 0x1D4B3, Y: 0x1D4B4,
       Z: 0x1D4B5, a: 0x1D4B6, b: 0x1D4B7, c: 0x1D4B8, d: 0x1D4B9,
-      e: 0x212F, f: 0x1D4BB, g: 0x210A, h: 0x1D4BD, 
-      i: 0x1D4BE, j: 0x1D4BF, k: 0x1D4C0, l: 0x1D4C1, m: 0x1D4C2, n: 0x1D4C3, 
-      o: 0x2134, p: 0x1D4C5, q: 0x1D4C6, r: 0x1D4C7, s: 0x1D4C8, t: 0x1D4C9, 
-      u: 0x1D4CA, v: 0x1D4CB, w: 0x1D4CC, x: 0x1D4CD, y: 0x1D4CE, z: 0x1D4CF, 
+      e: 0x212F, f: 0x1D4BB, g: 0x210A, h: 0x1D4BD, i: 0x1D4BE,
+      j: 0x1D4BF, k: 0x1D4C0, l: 0x1D4C1, m: 0x1D4C2, n: 0x1D4C3,
+      o: 0x2134, p: 0x1D4C5, q: 0x1D4C6, r: 0x1D4C7, s: 0x1D4C8,
+      t: 0x1D4C9, u: 0x1D4CA, v: 0x1D4CB, w: 0x1D4CC, x: 0x1D4CD,
+      y: 0x1D4CE, z: 0x1D4CF
     };
-    
+
     const frakturMap = {
       A: 0x1D504, B: 0x1D505, C: 0x212D, D: 0x1D507, E: 0x1D508,
       F: 0x1D509, G: 0x1D50A, H: 0x210C, I: 0x2111, J: 0x1D50D,
       K: 0x1D50E, L: 0x1D50F, M: 0x1D510, N: 0x1D511, O: 0x1D512,
-      P: 0x1D513, Q: 0x1D514, R: 0x211C, S: 0x1D516, T: 0x1D4AF,
-      U: 0x1D517, V: 0x1D518, W: 0x1D519, X: 0x1D51A, Y: 0x1D4B4,
+      P: 0x1D513, Q: 0x1D514, R: 0x211C, S: 0x1D516, T: 0x1D517,
+      U: 0x1D518, V: 0x1D519, W: 0x1D51A, X: 0x1D51B, Y: 0x1D51C,
       Z: 0x2128
     };
+
     function convertFancy() {
       const input = document.getElementById("inputText").value;
       const style = document.getElementById("styleSelect").value;
@@ -104,55 +121,44 @@ const scriptMap = {
       for (const ch of input) {
         const code = ch.codePointAt(0);
 
+        // Uppercase letters
         if (/^[A-Z]$/.test(ch)) {
-           if (style === "fraktur") {
-            output += frakturMap[ch]
-              ? String.fromCodePoint(frakturMap[ch])
-              : ch;
-          } else  if (style === "script") {
-            output += scriptMap[ch]
-              ? String.fromCodePoint(scriptMap[ch])
-              : ch;
-          } else if (style === "circled") {
-            output += String.fromCodePoint(0x24B6 + code - 65);
+          if (style === "fraktur") output += frakturMap[ch] ? String.fromCodePoint(frakturMap[ch]) : ch;
+          else if (style === "script") output += scriptMap[ch] ? String.fromCodePoint(scriptMap[ch]) : ch;
+          else if (style === "circled") output += String.fromCodePoint(0x24B6 + code - 65);
+          else if (style === "doubleStruck") output += doubleStruckMap[ch] ? String.fromCodePoint(doubleStruckMap[ch]) : ch;
+          else output += String.fromCodePoint(styles[style][0] + code - 65);
+        }
+        // Lowercase letters
+        else if (/^[a-z]$/.test(ch)) {
+          if (style === "fraktur") output += String.fromCodePoint(styles[style][1] + code - 97);
+          else if (style === "boldFraktur") output += String.fromCodePoint(styles[style][0] + code - 97);
+          else if (style === "script") output += scriptMap[ch] ? String.fromCodePoint(scriptMap[ch]) : ch;
+          else if (style === "circled") output += String.fromCodePoint(0x24D0 + code - 97);
+          else if (style === "blackCircled") output += String.fromCodePoint(styles[style][0] + code - 97);
+          else output += String.fromCodePoint(styles[style][1] + code - 97);
+        }
+        // Numbers
+        else if (/^[0-9]$/.test(ch)) {
+          if (style === "circled") {
+            output += code === 48 ? "⓪" : String.fromCodePoint(0x2460 + code - 49);
           } else if (style === "doubleStruck") {
-            output += doubleStruckMap[ch]
-              ? String.fromCodePoint(doubleStruckMap[ch])
-              : ch;
-          } else {
-            output += String.fromCodePoint(styles[style][0] + code - 65);
-          }
-        } else if (/^[a-z]$/.test(ch)) {
-          if (style === "boldFraktur") {
-            output += String.fromCodePoint(styles[style][1] + code - 122);
-          } else if (style === "fraktur") {
-            output += String.fromCodePoint(styles[style][1] + code - 122);
-          } else if (style === "script") {
-            output += scriptMap[ch]
-              ? String.fromCodePoint(scriptMap[ch])
-              : ch;
-          } else if (style === "blackSquared") {
-            output += String.fromCodePoint(styles[style][1] + code - 122);
-          } else if (style === "squared") {
-            output += String.fromCodePoint(styles[style][1] + code - 122);
-          } else if (style === "blackCircled") {
-            output += String.fromCodePoint(styles[style][0] + code - 97);
-          } else if (style === "circled") {
-            output += String.fromCodePoint(0x24D0 + code - 97);
-          } else {
-            output += String.fromCodePoint(styles[style][1] + code - 97);
-          }
-        } else if (/^[0-9]$/.test(ch) && style === "circled") {
-          const offset = code - 48;
-          output += offset === 0
-            ? "⓪"
-            : String.fromCodePoint(0x2460 + offset - 1);
+            const map = {0: '𝟘', 1:'𝟙',2:'𝟚',3:'𝟛',4:'𝟜',5:'𝟝',6:'𝟞',7:'𝟟',8:'𝟠',9:'𝟡'};
+            output += map[ch];
+          } else output += ch;
         } else {
-          output += ch; // keep spaces, punctuation, etc.
+          output += ch; // punctuation, symbols, spaces
         }
       }
 
       document.getElementById("outputText").textContent = output;
+    }
+
+    function copyOutput() {
+      const output = document.getElementById("outputText");
+      navigator.clipboard.writeText(output.textContent).then(() => {
+        alert("Copied to clipboard!");
+      });
     }
   </script>
 </body>
